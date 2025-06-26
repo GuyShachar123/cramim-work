@@ -1,5 +1,18 @@
 import random
 
+def check_valid_input(letter_guessed, old_letters_guessed ):
+     if letter_guessed in old_letters_guessed:
+         return False
+     
+     if len(letter_guessed)==1 and  letter_guessed.isalpha():
+        return True
+     else:
+        return False
+     
+    
+   
+
+
 # סעיף 1: הדפסת הודעת פתיחה
 print("Welcome to the game Hangman.")
 MAX_TRIES =6
@@ -99,22 +112,24 @@ HANGMAN_PICS = [
 #for i, pic in enumerate(HANGMAN_PICS):
 #    print(f"Picture {i + 1}:")
  #   print(pic)
-
+old_letters_guessed =[]
 word_to_guess=input("enter a word that pepole will guess")
 encrypted_word_to_guess= " _"* (len(word_to_guess))
 print(encrypted_word_to_guess)
 
+second_list = [[[1, 2], [3, 4]], [[5, 6], [7, 8]]]
+
 
 guess=input("guess a letters")
-if  not guess.isalpha() and len(guess)>1:
-     print("no signs and more than two letters allowed") 
-elif len(guess)>1:
-    print("it can not be longer than 1 letter")
+print(check_valid_input(guess,old_letters_guessed))
+old_letters_guessed.append(guess)
 
-elif not guess.isalpha():
-    print("no signs allowed")
-else:
-    guess=guess.lower()
-    print("the guess was "+guess)
+while guess != '*':
+    guess=input("guess a letters")
+    print(check_valid_input(guess,old_letters_guessed))
+    old_letters_guessed.append(guess)
+
+
+
 
 
