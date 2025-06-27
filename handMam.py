@@ -4,10 +4,23 @@ def check_valid_input(letter_guessed, old_letters_guessed ):
      if letter_guessed in old_letters_guessed:
          return False
      
+     
      if len(letter_guessed)==1 and  letter_guessed.isalpha():
         return True
      else:
         return False
+     
+def try_update_letter_guessed(letter_guessed, old_letters_guessed):
+      if check_valid_input(letter_guessed,old_letters_guessed):
+        old_letters_guessed.append(guess)
+        return True
+      else:
+        return "X\n" + " -> ".join(sorted(old_letters_guessed))
+
+     
+         
+         
+     
      
     
    
@@ -119,16 +132,13 @@ print(encrypted_word_to_guess)
 
 second_list = [[[1, 2], [3, 4]], [[5, 6], [7, 8]]]
 
-
-guess=input("guess a letters")
-print(check_valid_input(guess,old_letters_guessed))
-old_letters_guessed.append(guess)
-
+#letter_guessed=[]
+guess =''
 while guess != '*':
     guess=input("guess a letters")
     print(check_valid_input(guess,old_letters_guessed))
-    old_letters_guessed.append(guess)
-
+    try_update_letter_guessed(guess,old_letters_guessed)    
+print(old_letters_guessed)
 
 
 
