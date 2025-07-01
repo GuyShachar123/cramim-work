@@ -1,21 +1,50 @@
 import random
 
 def check_valid_input(letter_guessed, old_letters_guessed ):
-     if letter_guessed in old_letters_guessed:
-         return False
-     
-     
-     if len(letter_guessed)==1 and  letter_guessed.isalpha():
-        return True
-     else:
-        return False
+  if letter_guessed in old_letters_guessed:
+      return False
+  
+  
+  if len(letter_guessed)==1 and  letter_guessed.isalpha():
+    return True
+  else:
+    return False
      
 def try_update_letter_guessed(letter_guessed, old_letters_guessed):
-      if check_valid_input(letter_guessed,old_letters_guessed):
-        old_letters_guessed.append(guess)
-        return True
-      else:
-        return "X\n" + " -> ".join(sorted(old_letters_guessed))
+  if check_valid_input(letter_guessed,old_letters_guessed):
+    old_letters_guessed.append(guess)
+    return True
+  else:
+    return "X\n" + " -> ".join(sorted(old_letters_guessed))
+  
+def show_hidden_word(secret_word, old_letters_guessed):
+  #encrypted_word_to_guess= " _"* (len(word_to_guess))
+  encrypted_word_to_guess=""
+  for item in secret_word:
+    if item in old_letters_guessed:
+      encrypted_word_to_guess+=item
+    elif item == ' ':
+      encrypted_word_to_guess+=' '
+    else:
+      encrypted_word_to_guess+='_'
+    encrypted_word_to_guess+=' '
+  return encrypted_word_to_guess
+
+
+def check_win(secret_word, old_letters_guessed):
+  for item in secret_word:
+    if not item in old_letters_guessed:
+      return False
+  return True
+
+
+   
+
+
+  
+
+  
+
 
      
          
@@ -127,8 +156,8 @@ HANGMAN_PICS = [
  #   print(pic)
 old_letters_guessed =[]
 word_to_guess=input("enter a word that pepole will guess")
-encrypted_word_to_guess= " _"* (len(word_to_guess))
-print(encrypted_word_to_guess)
+#encrypted_word_to_guess= " _"* (len(word_to_guess))
+print(show_hidden_word(word_to_guess,old_letters_guessed))
 
 second_list = [[[1, 2], [3, 4]], [[5, 6], [7, 8]]]
 
@@ -136,9 +165,11 @@ second_list = [[[1, 2], [3, 4]], [[5, 6], [7, 8]]]
 guess =''
 while guess != '*':
     guess=input("guess a letters")
-    print(check_valid_input(guess,old_letters_guessed))
-    try_update_letter_guessed(guess,old_letters_guessed)    
-print(old_letters_guessed)
+    if(check_valid_input(guess,old_letters_guessed)):
+      try_update_letter_guessed(guess,old_letters_guessed)    
+#print(old_letters_guessed)
+print(show_hidden_word(word_to_guess,old_letters_guessed))
+print(check_win(word_to_guess,old_letters_guessed))
 
 
 
