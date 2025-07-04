@@ -160,13 +160,18 @@ word_to_guess=input("enter a word that pepole will guess")
 print(show_hidden_word(word_to_guess,old_letters_guessed))
 
 second_list = [[[1, 2], [3, 4]], [[5, 6], [7, 8]]]
-
+num_of_guess=0
 #letter_guessed=[]
 guess =''
-while guess != '*':
+while num_of_guess != 7 or check_win(word_to_guess,old_letters_guessed):
     guess=input("guess a letters")
     if(check_valid_input(guess,old_letters_guessed)):
-      try_update_letter_guessed(guess,old_letters_guessed)    
+      try_update_letter_guessed(guess,old_letters_guessed) 
+    if not guess in word_to_guess:
+      print(HANGMAN_PICS[num_of_guess])
+      num_of_guess+=1
+      
+
 #print(old_letters_guessed)
 print(show_hidden_word(word_to_guess,old_letters_guessed))
 print(check_win(word_to_guess,old_letters_guessed))
