@@ -45,22 +45,29 @@ if __name__ == "__main__":
         if pid <0:
             continue
 
+
         try:
             process_handle = win32api.OpenProcess(   win32con.PROCESS_QUERY_INFORMATION,  False,pid    )
             token = win32security.OpenProcessToken(process_handle, win32con.TOKEN_ADJUST_PRIVILEGES | win32con.TOKEN_QUERY)
         except Exception as e:
             print(f"eroor{e}")
             continue
+        print_Privilege(pid)
 
         privilege_name = input("enter privlage to change")
         privlage_flag = input("enter 0 for disable 1 for enable by defult 2 for enable 3 defult enable 4 disable")
+        try:
+            privlage_flag =int(privlage_flag)
+        except Exception as e:
+            continue
+
         #need to check for int valid and make it chosen privlage
         try:
             luid = win32security.LookupPrivilegeValue(None, privilege_name)
         except Exception as e:
             print("invalid privlage name ")
             continue
-        new_privileges = [(luid, win32security.SE_PRIVILEGE_ENABLED)]
+        new_privileges = [(luid, privlage_flag)]
         win32security.AdjustTokenPrivileges(token, False, new_privileges)
         print_Privilege(pid)
 
