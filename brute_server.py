@@ -43,7 +43,6 @@ def handle_client(client_socket, client_address):
             client_socket.sendall(request.encode())
         except Exception as e:
             print(f"Error sending data to client {client_address}:", e)
-            # If sending fails, put the chunk back into retry_chunks so someone else can do it
             with lock:
                 retry_chunks.append(current_chunk)
             break
@@ -52,13 +51,11 @@ def handle_client(client_socket, client_address):
             response = client_socket.recv(1024).decode()
         except Exception as e:
             print(f"Error receiving data from client {client_address}:", e)
-            # If receiving fails (disconnection), put the chunk back into retry_chunks!
             with lock:
                 retry_chunks.append(current_chunk)
             break
 
         if not response:
-            # Client disconnected gracefully or dropped unexpectedly
             with lock:
                 retry_chunks.append(current_chunk)
             break
