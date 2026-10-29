@@ -15,9 +15,18 @@ clients_connected = set()
 retry_chunks = []
 
 def verify_md5(num_str):
+    """
+        enter: num_str
+        exit: bool (True if hash matches TARGET_MD5)
+        """
     return hashlib.md5(num_str.encode()).hexdigest().upper() == TARGET_MD5.upper()
 
 def handle_client(client_socket, client_address):
+    """
+    enter: client_socket, client_address
+    exit: Manages client loop, chunk assignment, and verification
+    """
+
     global current_number, found_solution, winning_client
     print(f"[+] Client connected: {client_address}")
 
@@ -43,6 +52,7 @@ def handle_client(client_socket, client_address):
             client_socket.sendall(request.encode())
         except Exception as e:
             print(f"Error sending data to client {client_address}:", e)
+            # If sending fails, put the chunk back into retry_chunks so someone else can do it
             with lock:
                 retry_chunks.append(current_chunk)
             break
@@ -51,11 +61,13 @@ def handle_client(client_socket, client_address):
             response = client_socket.recv(1024).decode()
         except Exception as e:
             print(f"Error receiving data from client {client_address}:", e)
+            # If receiving fails (disconnection), put the chunk back into retry_chunks!
             with lock:
                 retry_chunks.append(current_chunk)
             break
 
         if not response:
+            # Client disconnected gracefully or dropped unexpectedly
             with lock:
                 retry_chunks.append(current_chunk)
             break
@@ -78,6 +90,10 @@ def handle_client(client_socket, client_address):
     print(f"Finished connection with {client_address}")
 
 def start_server():
+    """
+    enter: None
+    exit: Binds server socket, runs client thread loop, and prints final statistics
+    """
     global start_time
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.bind(('0.0.0.0', 5000))
