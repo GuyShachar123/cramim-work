@@ -6,6 +6,10 @@ import time
 WIDTH, HEIGHT = 800, 600
 class ball:
     def __init__(self, ball_id):
+        """
+        enter: ball_id
+        exit: Initializes ball attributes (id, radius, x, y, color)
+        """
         self.id = ball_id
         self.radius = 20
         self.x = random.randint(self.radius, WIDTH - self.radius)
@@ -13,18 +17,25 @@ class ball:
         self.color = (random.randint(50, 255), random.randint(50, 255), random.randint(50, 255))
 
     def move(self):
+        """
+        enter: None
+        exit: Randomly repositions the ball within bounds
+        """
         self.x = random.randint(self.radius, WIDTH - self.radius)
         self.y = random.randint(self.radius, HEIGHT - self.radius)
 
 
-def  ball_thread(ball):
+def ball_thread(ball):
+    """
+    enter: ball
+    exit: Moves the ball in a loop with delays and prints completion
+    """
     print(f"ball id:{ball.id}")
     amount_to_move = random.randint(1,10)
     for i in range(amount_to_move):
         ball.move()
         time.sleep(1)
     print(f"{ball.id} finished")
-
 
 if __name__ == '__main__':
     pygame.init()
@@ -34,7 +45,15 @@ if __name__ == '__main__':
     ball_radius = 20
     ball_x,ball_y = 0,0
 
-    balls_num = int(input("enter ball amount"))
+    try:
+        balls_num = int(input("Enter ball amount: "))
+    except Exception as e:
+        print("value was not an int")
+        # 5 is defult if they dont enter good input
+        balls_num = 5
+    if balls_num == 0:
+        # 5 is defult if they dont enter good input
+        balls_num = 5
     ball_list = []
     for i in range(balls_num):
         ball_list.append(ball(i))
