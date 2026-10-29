@@ -7,7 +7,7 @@ TARGET_MD5 = "EC9C0F7EDCC18A98B1F31853B1813301"
 
 def worker_task(start, end, result_queue):
     """
-    enter: start worker task to brute force a specific number range
+    enter:start, end, result_queue
     exit: worker finishes range or puts found solution into result queue
     """
     for num in range(start, end):
@@ -18,7 +18,7 @@ def worker_task(start, end, result_queue):
 
 def brute_force_chunk(start, end, num_cores):
     """
-    enter: split chunk across multiple CPU cores using processes
+    enter: start, end, num_cores
     exit: return found solution if any, otherwise finish chunk
     """
     chunk_size = (end - start) // num_cores
@@ -49,7 +49,7 @@ def brute_force_chunk(start, end, num_cores):
 
 def start_client(server_ip='127.0.0.1'):
     """
-    enter: start client connection to server and handle work loop
+    enter: server_ip
     exit: client socket closed and process ends
     """
     num_cores = multiprocessing.cpu_count()
