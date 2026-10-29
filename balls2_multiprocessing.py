@@ -98,8 +98,17 @@ if __name__ == '__main__':
     print_queue = multiprocessing.Queue()
     ball_to_detector_queue = multiprocessing.Queue()
     detector_to_gui_queue = multiprocessing.Queue()
+    try:
+        balls_num = int(input("Enter ball amount: "))
+    except Exception as e:
+        print("value was not an int")
+        #5 is defult if they dont enter good input
+        balls_num = 5
+    if balls_num == 0:
+        # 5 is defult if they dont enter good input
+        balls_num = 5
 
-    balls_num = int(input("Enter ball amount: "))
+
 
     p3 = multiprocessing.Process(target=print_p, args=(print_queue,))
     p3.start()
