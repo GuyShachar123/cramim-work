@@ -3,6 +3,10 @@ import win32con
 import win32security
 
 def enable_debug_privilege():
+    """
+     enter none
+     return non what it does is enable_debug_privilege :
+    """
     try:
         current_process = win32api.GetCurrentProcess()
         token = win32security.OpenProcessToken(current_process, win32con.TOKEN_ADJUST_PRIVILEGES | win32con.TOKEN_QUERY)
@@ -13,6 +17,10 @@ def enable_debug_privilege():
         pass
 
 def print_Privilege(pid):
+    """
+    :param pid:
+    :return none what it does is print_Privilege :
+    """
     process = win32api.OpenProcess(
         win32con.PROCESS_QUERY_INFORMATION | win32con.TOKEN_ADJUST_PRIVILEGES,
         False,
