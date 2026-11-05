@@ -6,6 +6,7 @@ import datetime
 import threading
 import webbrowser
 import urllib.parse
+import shutil
 
 while True:
     folder = input("enter folder: ").strip()
@@ -48,40 +49,39 @@ def monitor(dir_handle, log_file_path, monitored_folder, target_pic_folder):
 
                 if action == 1:
                     msg = f"New file created: {file_name}"
-
-                    ext = os.path.splitext(file_name)[1].lower()
-                    if ext in pic_list:
-                        src_path = os.path.join(monitored_folder, file_name)
-                        dest_path = os.path.join(target_pic_folder, file_name)
-
-                        if not os.path.isfile(dest_path):
-                            success = False
-                            for i in range(10):
-                                try:
-                                    if os.path.isfile(src_path):
-                                        with open(src_path, "rb") as f:
-                                            data = f.read()
-                                        with open(dest_path, "wb") as f:
-                                            f.write(data)
-                                        print(f"-> Copied image to pic folder: {file_name}")
-                                        success = True
-                                        break
-                                # this is the error we were getting 
-                                except PermissionError:
-                                    time.sleep(0.5)
-                                except Exception as e:
-                                    print(f"-> Error copying file: {e}")
-                                    break
-
-                            if not success:
-                                print(f"-> Failed to copy {file_name}: File remained locked.")
-
                 elif action == 2:
                     msg = f"File deleted: {file_name}"
                 elif action == 4:
                     msg = f"File renamed from: {file_name}"
                 elif action == 5:
                     msg = f"File renamed to: {file_name}"
+
+                if action in (1, 5):
+                    ext = os.path.splitext(file_name)[1].lower()
+
+                    if ext in pic_list:
+                        src_path = os.path.join(monitored_folder, file_name)
+                        dest_path = os.path.join(target_pic_folder, file_name)
+
+                        if not os.path.isfile(dest_path):
+                            success = False
+                            for i in range(20):
+                                try:
+                                    if os.path.isfile(src_path) and os.path.getsize(src_path) > 0:
+                                        shutil.copy2(src_path, dest_path)
+                                        print(f"-> Copied image to pic folder: {file_name}")
+                                        success = True
+                                        break
+                                except PermissionError:
+                                    pass
+                                except Exception as e:
+                                    print(f"-> Error copying file: {e}")
+                                    break
+
+                                time.sleep(0.5)
+
+                            if not success:
+                                print(f"-> Failed to copy {file_name}: File remained locked or empty.")
 
                 if msg:
                     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -90,8 +90,8 @@ def monitor(dir_handle, log_file_path, monitored_folder, target_pic_folder):
                     with open(log_file_path, "a", encoding="utf-8") as f:
                         f.write(log_line)
 
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"Monitor thread crashed: {e}")
 
 
 if __name__ == "__main__":
@@ -99,12 +99,12 @@ if __name__ == "__main__":
     t.start()
 
     while True:
-        msg2 = input("exit to exit enter a pic name to look it up").strip().lower()
+        msg2 = input("exit to exit, enter a pic name to look it up: ").strip().lower()
         if msg2 == "exit":
             win32file.CloseHandle(hDir)
             os._exit(0)
-        else:
-            #encoded_query = urllib.parse.quote(msg2)
-            url = f"https://www.google.com/search?q={msg2}&tbm=isch"
+        elif msg2:
+            encoded_query = urllib.parse.quote(msg2)
+            url = f"https://www.google.com/search?q={encoded_query}&tbm=isch"
             webbrowser.open(url)
             print(f"Opened browser search for: {msg2}")
