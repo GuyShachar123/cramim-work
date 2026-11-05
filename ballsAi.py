@@ -34,27 +34,29 @@ def create_ball(qBalls):
         qBalls.put((x, y, 0))
 
 
-
-def ai_agent_commentary(red_and_blue_count):
+red_and_blue_count = 0
+def ai_agent_commentary():
+    global red_and_blue_count
     """
     enter: None
     exit: Periodically queries the local LLM for commentary on active balls and logs the response
     """
     url = "http://localhost:11434/api/generate"
-
-    prompt = f"tell me how meany red and blue balls are there (there were+{red_and_blue_count})"
-    data = {
-        "model": "llama3",
-        "prompt": prompt,
-        "stream": False
-    }
-    try:
-        response = requests.post(url, json=data, timeout=3)
-        if response.status_code == 200:
-            reply = response.json().get("response", "")
-            log_message(f"[AI Agent]: {reply}")
-    except Exception as e:
-        print(e)
+    while True:
+        prompt = f"tell me how meany red and blue balls are there (there were+{red_and_blue_count})"
+        data = {
+            "model": "llama3",
+            "prompt": prompt,
+            "stream": False
+        }
+        try:
+            response = requests.post(url, json=data, timeout=3)
+            if response.status_code == 200:
+                reply = response.json().get("response", "")
+                log_message(f"[AI Agent]: {reply}")
+        except Exception as e:
+            print(e)
+        time.sleep(2)
 
 try:
     balls = int(input("Enter ball amount: "))
@@ -68,13 +70,15 @@ if balls == 0:
 pygame.init()
 screen = pygame.display.set_mode((800, 600))
 
-red_and_blue_count = 0
+
 threads = []
 threads_closed = []
 balls_alive = balls
 qBalls = queue.Queue()
 
 created_ball = 0
+t0 = threading.thread(target =ai_agent_commentary,daemon = True)
+t0.start()
 
 running = True
 while running:
@@ -112,6 +116,6 @@ while running:
 
     if balls_alive == 0:
         running = False
-ai_agent_commentary(red_and_blue_count)
+
 pygame.quit()
 log_file.close()
